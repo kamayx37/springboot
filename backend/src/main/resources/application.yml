@@ -1,0 +1,93 @@
+server:
+  # 注意：8080 可能被其他程序占用（本机被 DSH 桌面端 CEF 调试端口占用），故使用 8090
+  port: 8090
+  servlet:
+    context-path: /
+
+spring:
+  application:
+    name: product-admin
+
+  # ---------------- PostgreSQL ----------------
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://127.0.0.1:5432/product_admin?stringtype=unspecified
+    username: nap
+    password: 201201371
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 50
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+  # ---------------- Redis（登录状态） ----------------
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 16
+          max-idle: 8
+          min-idle: 2
+
+  # ---------------- RabbitMQ（异步索引重建） ----------------
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: guest
+    password: guest
+    virtual-host: /
+    listener:
+      simple:
+        acknowledge-mode: manual
+        concurrency: 1
+        max-concurrency: 2
+
+  # ---------------- Elasticsearch（全文检索） ----------------
+  elasticsearch:
+    uris: http://127.0.0.1:9200
+    connection-timeout: 10s
+    socket-timeout: 30s
+
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    default-property-inclusion: non_null
+
+  web:
+    resources:
+      add-mappings: true
+
+# ---------------- 业务配置 ----------------
+app:
+  jwt:
+    # HS256 密钥，长度必须 >= 32 字节
+    secret: product-admin-jwt-secret-key-2024-please-change-in-production
+    # token 有效期（秒），默认 2 小时
+    expire-seconds: 7200
+    header: Authorization
+    prefix: "Bearer "
+  cors:
+    allowed-origins: "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173"
+  search:
+    product-index: product_index
+    page-size: 10
+
+logging:
+  level:
+    root: INFO
+    com.example.product: DEBUG
+    org.hibernate.SQL: WARN

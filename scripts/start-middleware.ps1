@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 #  商品管理系统 - 中间件启动脚本
 #  启动 Redis、RabbitMQ、Elasticsearch（PostgreSQL 为 Windows 服务，通常已在运行）
 #  用法： powershell -ExecutionPolicy Bypass -File scripts\start-middleware.ps1
@@ -56,6 +56,9 @@ if (Test-Port 9200) {
     Write-Host "[跳过] Elasticsearch 已在运行 (9200)" -ForegroundColor Yellow
 } else {
     Write-Host "[启动] Elasticsearch ..." -ForegroundColor Green
+    # ES 默认把临时文件放在系统 %TEMP% 下，可能因权限失败，这里强制指向项目内目录
+    $env:ES_TMPDIR = Join-Path $MW "es-tmp"
+    New-Item -ItemType Directory -Force -Path $env:ES_TMPDIR | Out-Null
     Start-Process -FilePath (Join-Path $MW "elasticsearch\bin\elasticsearch.bat") `
         -WorkingDirectory (Join-Path $MW "elasticsearch") -WindowStyle Minimized
     Write-Host "       等待 Elasticsearch 就绪（约 20-40 秒）..." -ForegroundColor DarkGray

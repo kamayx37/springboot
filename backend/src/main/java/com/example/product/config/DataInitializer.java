@@ -52,7 +52,6 @@ public class DataInitializer implements ApplicationRunner {
         } catch (Exception e) {
             log.warn("启动时自动重建 ES 索引失败（可在界面手动提交重建任务）: {}", e.getMessage());
         }
-        printDemoAccounts();
     }
 
     // ------------------------------------------------------------------ RBAC
@@ -170,21 +169,6 @@ public class DataInitializer implements ApplicationRunner {
         userRepository.save(entity);
     }
 
-    private void printDemoAccounts() {
-        log.info("""
-
-                ========================================================
-                  演示账号（密码均为 BCrypt 密文存储）
-                    admin   / admin123    超级管理员（全部权限）
-                    product / product123  商品管理员（商品+分类+检索）
-                    viewer  / viewer123   只读访客（仅查看）
-                  前端地址: http://localhost:5173
-                  后端接口: http://localhost:8090
-                ========================================================
-                """);
-    }
-
-    // ------------------------------------------------------------ 业务数据
 
     private void initCategoriesAndProducts() {
         log.info("开始初始化分类与商品数据...");
